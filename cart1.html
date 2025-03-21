@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Innovate Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 15px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #888;
+        }
+
+        .cart-container {
+            width: 80%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .cart-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-item img {
+            width: 80px;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .cart-item-info {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .cart-item h3 {
+            font-size: 1.2rem;
+        }
+
+        .cart-item p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .remove-btn {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .remove-btn:hover {
+            background-color: #c9302c;
+        }
+
+        .cart-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d9534f;
+        }
+
+        .clear-cart-btn, .checkout-btn, .back-btn {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .clear-cart-btn {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        .clear-cart-btn:hover {
+            background-color: #c9302c;
+        }
+
+        .checkout-btn {
+            background-color: #5cb85c;
+            color: white;
+        }
+
+        .checkout-btn:hover {
+            background-color: #4cae4c;
+        }
+
+        .back-btn {
+            background-color: #0275d8;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background-color: #025aa5;
+        }
+
+        /* QR Modal Styles */
+        #qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .qr-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .qr-modal-content img {
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .qr-modal-content p {
+            font-size: 1.2rem;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .close-btn {
+            background-color: #d9534f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .close-btn:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Innovate Store</h1>
+        <p>Your Shopping Cart</p>
+    </header>
+
+    <nav>
+        <a href="store.html" onclick="navigateTo('index')">Home</a>
+        <a href="store.html" onclick="navigateTo('shop')">Shop</a>
+        <a href="about.html" onclick="navigateTo('about')">About</a>
+        <a href="contact.html" onclick="navigateTo('contact')">Contact</a>
+    </nav>
+
+    <div class="cart-container">
+        <h2 class="cart-title">Your Cart</h2>
+        <div id="cart-items"></div>
+
+        <div class="cart-footer">
+            <p class="total-price">Total: ?<span id="cart-total">0</span></p>
+            <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
+            <button class="checkout-btn" onclick="checkout()">QR transcation</button>
+            <button class="back-btn" onclick="goBack()">Continue payments</button>
+        </div>
+    </div>
+
+    <footer>
+        <p style="text-align: center; padding: 15px; background: #333; color: white;">&copy; 2025 Innovate Store. All Rights Reserved.</p>
+    </footer>
+
+    <!-- QR Code Modal -->
+    <div id="qr-modal">
+        <div class="qr-modal-content">
+            <img src="https://i.postimg.cc/JhB3tVXT/qr.jpg" alt="QR Code">
+            <p>Amount to be paid: ?<span id="modal-total-amount">0</span></p>
+            <button class="close-btn" onclick="closeQRModal()">Close</button>
+        </div>
+    </div>
+
+<script>
+    function loadCart() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartItemsContainer = document.getElementById("cart-items");
+        const cartTotal = document.getElementById("cart-total");
+
+        cartItemsContainer.innerHTML = "";
+        let total = 0;
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = "<p style='text-align:center; font-size: 1.2rem;'>Your cart is empty.</p>";
+            cartTotal.innerText = "0";
+            return;
+        }
+
+        cart.forEach((item, index) => {
+            total += item.price;
+            const cartItemElement = document.createElement("div");
+            cartItemElement.classList.add("cart-item");
+
+            cartItemElement.innerHTML = `
+                <img src="${item.img}" alt="${item.name}">
+                <div class="cart-item-info">
+                    <h3>${item.name}</h3>
+                    <p>Price: ?${item.price}</p>
+                </div>
+                <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+            `;
+
+            cartItemsContainer.appendChild(cartItemElement);
+        });
+
+        cartTotal.innerText = total;
+    }
+
+    function removeFromCart(index) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        loadCart();
+    }
+
+    function clearCart() {
+        localStorage.removeItem("cart");
+        loadCart();
+    }
+
+    function checkout() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (cart.length === 0) {
+            alert("Your cart is empty!");
+            return;
+        }
+        // Calculate total amount
+        let total = cart.reduce((sum, item) => sum + item.price, 0);
+        document.getElementById("modal-total-amount").innerText = total;
+
+        // Show QR modal with total amount
+        document.getElementById("qr-modal").style.display = "flex";
+    }
+
+    function closeQRModal() {
+        document.getElementById("qr-modal").style.display = "none";
+    }
+
+    function goBack() {
+        window.location.href = "payment.html";
+    }
+
+   function checkout() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+    // Calculate total amount
+    let total = cart.reduce((sum, item) => sum + item.price, 0);
+    document.getElementById("modal-total-amount").innerText = total;
+
+    // Show QR modal with total amount
+    document.getElementById("qr-modal").style.display = "flex";
+
+    // Redirect to payment page after 3 seconds (or any custom time)
+    setTimeout(function () {
+        window.location.href = "payment.html";
+    }, 3000);  // 3000ms = 3 seconds
+}
+
+
+    loadCart();
+</script>
+
+</body>
+
+</html>
